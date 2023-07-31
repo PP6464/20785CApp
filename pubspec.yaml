@@ -13,6 +13,22 @@ dependencies:
   cupertino_icons: ^1.0.2
   # Firebase
   firebase_core: ^2.15.0
+  firebase_auth: ^4.7.2
+  cloud_firestore: ^4.8.4
+  # App state
+  provider: ^6.0.5
+  shared_preferences: ^2.2.0
+  # Launcher configuration
+  flutter_app_name: ^0.1.1
+  flutter_launcher_icons: ^0.11.0
+
+flutter_icons:
+  image_path: "assets/logo-transparent.png"
+  android: true
+  ios: true
+
+flutter_app_name:
+  name: "20785C App"
 
 dev_dependencies:
   flutter_test:
