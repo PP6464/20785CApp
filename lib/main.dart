@@ -35,6 +35,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: theme.primary.colour,
+            primary: theme.primary.colour,
             brightness: Brightness.light,
           ),
           fontFamily: "Roboto Mono",
@@ -42,6 +43,7 @@ class MyApp extends StatelessWidget {
         darkTheme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: theme.darkAppBar.colour,
+            primary: theme.primary.colour,
             brightness: Brightness.dark,
             background: theme.darkSurface.colour,
             surface: theme.darkSurface.colour,
