@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 double tsfMin = 0.5;
@@ -30,3 +31,5 @@ class AppSettings extends ChangeNotifier {
     _tsf = tsf;
   }
 }
+
+AppSettings defaultProvider(BuildContext context) => Provider.of<AppSettings>(context);
