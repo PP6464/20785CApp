@@ -1,7 +1,10 @@
 import 'package:app_c20785/provider/provider.dart';
 import 'package:app_c20785/ui/theme.dart';
 import 'package:app_c20785/ui/widgets.dart';
+import 'package:app_c20785/util/regex.dart';
+import 'package:app_c20785/util/values.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -49,6 +52,11 @@ class _AuthPageState extends State<AuthPage> {
                     const SizedBox(height: 8.0),
                     TextFormField(
                       controller: loginTeamNumber,
+                      validator: (String? teamNumber) {
+                        if (teamNumber == null || teamNumber.isEmpty) return "Team number is required";
+                        if (!teamNumberRegex.hasMatch(teamNumber)) return "Team number format is invalid";
+                        return null;
+                      },
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         prefixIcon: const Icon(Icons.numbers),
@@ -62,6 +70,11 @@ class _AuthPageState extends State<AuthPage> {
                     TextFormField(
                       controller: loginPassword,
                       obscureText: obscureLoginPassword,
+                      validator: (String? password) {
+                        if (password == null || password.isEmpty) return "Password is required";
+                        if (password.length < 10) return "Password must be at least 10 characters long";
+                        return null;
+                      },
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         prefixIcon: const Icon(Icons.lock),
@@ -82,7 +95,22 @@ class _AuthPageState extends State<AuthPage> {
                     ),
                     const SizedBox(height: 8.0),
                     ElevatedButton(
-                      onPressed: () async {},
+                      onPressed: () async {
+                        if (!loginKey.currentState!.validate()) return;
+                        http.Response res = await http.post(
+                          Uri.parse("$apiUrl/auth/login"),
+                          headers: jsonContentHeader,
+                          body: {
+                            "teamNumber": loginTeamNumber.text,
+                            "password": loginPassword.text,
+                          }
+                        );
+                        if (res.statusCode.toString().substring(0,1) == "2") {
+                          // Http response is OK
+                        } else if (res.statusCode.toString().substring(0,1) == "4") {
+                          // Http response is an error
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.primary.colour,
                         shape: RoundedRectangleBorder(
@@ -134,6 +162,11 @@ class _AuthPageState extends State<AuthPage> {
                     const SizedBox(height: 8.0),
                     TextFormField(
                       controller: signUpTeamNumber,
+                      validator: (String? teamNumber) {
+                        if (teamNumber == null || teamNumber.isEmpty) return "Team number is required";
+                        if (!teamNumberRegex.hasMatch(teamNumber)) return "Team number format is invalid";
+                        return null;
+                      },
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         prefixIcon: const Icon(Icons.numbers),
@@ -147,6 +180,11 @@ class _AuthPageState extends State<AuthPage> {
                     TextFormField(
                       controller: signUpPassword,
                       obscureText: obscureSignUpPassword,
+                      validator: (String? password) {
+                        if (password == null || password.isEmpty) return "Password is required";
+                        if (password.length < 10) return "Password must be at least 10 characters long";
+                        return null;
+                      },
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         prefixIcon: const Icon(Icons.lock),
