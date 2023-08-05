@@ -1,0 +1,1 @@
+RegExp teamNumberRegex = RegExp(r"^\d{1,5}[a-zA-Z]$");
