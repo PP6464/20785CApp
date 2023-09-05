@@ -1,8 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:app_c20785/apis/firebase.dart';
 import 'package:app_c20785/provider/provider.dart';
 import 'package:app_c20785/ui/theme.dart';
 import 'package:app_c20785/ui/widgets.dart';
 import 'package:app_c20785/util/regex.dart';
 import 'package:app_c20785/util/values.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -23,6 +27,15 @@ class _AuthPageState extends State<AuthPage> {
   TextEditingController signUpTeamNumber = TextEditingController();
   TextEditingController signUpPassword = TextEditingController();
   bool obscureSignUpPassword = true;
+
+  @override
+  void dispose() {
+    super.dispose();
+    loginTeamNumber.dispose();
+    loginPassword.dispose();
+    signUpTeamNumber.dispose();
+    signUpPassword.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,18 +110,32 @@ class _AuthPageState extends State<AuthPage> {
                     ElevatedButton(
                       onPressed: () async {
                         if (!loginKey.currentState!.validate()) return;
-                        http.Response res = await http.post(
-                          Uri.parse("$apiUrl/auth/login"),
-                          headers: jsonContentHeader,
-                          body: {
-                            "teamNumber": loginTeamNumber.text,
-                            "password": loginPassword.text,
+                        http.Response res = await http.post(Uri.parse("$apiUrl/auth/login"), headers: jsonContentHeader, body: {
+                          "teamNumber": loginTeamNumber.text,
+                          "password": loginPassword.text,
+                        });
+                        if (res.statusCode.toString().substring(0, 1) == "2") {
+                          try {
+                            await auth.signInWithCustomToken(res.body);
+                          } on FirebaseException catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  e.message!,
+                                  textScaleFactor: defaultProvider(context).tsf,
+                                ),
+                              ),
+                            );
                           }
-                        );
-                        if (res.statusCode.toString().substring(0,1) == "2") {
-                          // Http response is OK
-                        } else if (res.statusCode.toString().substring(0,1) == "4") {
-                          // Http response is an error
+                        } else if (res.statusCode.toString().substring(0, 1) == "4") {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                res.body,
+                                textScaleFactor: defaultProvider(context).tsf,
+                              ),
+                            ),
+                          );
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -205,7 +232,41 @@ class _AuthPageState extends State<AuthPage> {
                     ),
                     const SizedBox(height: 8.0),
                     ElevatedButton(
-                      onPressed: () async {},
+                      onPressed: () async {
+                        http.Response res = await http.put(
+                          Uri.parse("$apiUrl/auth/signup"),
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: {
+                            "teamNumber": signUpTeamNumber.text,
+                            "password": signUpPassword.text,
+                          },
+                        );
+                        if (res.statusCode.toString().substring(0, 1) == "2") {
+                          try {
+                            await auth.signInWithCustomToken(res.body);
+                          } on FirebaseException catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  e.message!,
+                                  textScaleFactor: defaultProvider(context).tsf,
+                                ),
+                              ),
+                            );
+                          }
+                        } else if (res.statusCode.toString().substring(0, 1) == "4") {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                res.body,
+                                textScaleFactor: defaultProvider(context).tsf,
+                              ),
+                            ),
+                          );
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.primary.colour,
                         shape: RoundedRectangleBorder(
