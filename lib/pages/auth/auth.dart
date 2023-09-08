@@ -1,6 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:app_c20785/apis/firebase.dart';
+import 'package:app_c20785/pages/home/admin.dart';
+import 'package:app_c20785/pages/home/normal.dart';
 import 'package:app_c20785/provider/provider.dart';
 import 'package:app_c20785/ui/theme.dart';
 import 'package:app_c20785/ui/widgets.dart';
@@ -31,9 +33,13 @@ class _AuthPageState extends State<AuthPage> {
   @override
   void dispose() {
     super.dispose();
+    loginTeamNumber.clear();
     loginTeamNumber.dispose();
+    loginPassword.clear();
     loginPassword.dispose();
+    signUpTeamNumber.clear();
     signUpTeamNumber.dispose();
+    signUpTeamNumber.clear();
     signUpPassword.dispose();
   }
 
@@ -117,6 +123,11 @@ class _AuthPageState extends State<AuthPage> {
                         if (res.statusCode.toString().substring(0, 1) == "2") {
                           try {
                             await auth.signInWithCustomToken(res.body);
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => loginTeamNumber.text == "20785C" ? const AdminHomePage() : const NormalHomePage(),
+                              ),
+                            );
                           } on FirebaseException catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -246,6 +257,11 @@ class _AuthPageState extends State<AuthPage> {
                         if (res.statusCode.toString().substring(0, 1) == "2") {
                           try {
                             await auth.signInWithCustomToken(res.body);
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => signUpTeamNumber.text == "20785C" ? const AdminHomePage() : const NormalHomePage(),
+                              ),
+                            );
                           } on FirebaseException catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
